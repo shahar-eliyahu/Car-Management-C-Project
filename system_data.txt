@@ -1,0 +1,20 @@
+3
+Sedan,Petrol,Toyota,Camry,25000.00,100000001
+SUV,Diesel,Ford,Explorer,32000.00,100000002
+aaa,bbb,bmw,M6,6000000.00,100000000
+3
+10000001,Brake Pads,Bosch,45.99,AutoParts Inc.,10.50,5.00,1.20
+10000002,Oil Filter,Mobil,15.50,Filters Ltd.,4.00,4.00,5.00
+100000000,bab,bab,19753.00,aba,5.00,5.00,5.00
+2
+John,Doe,123456789
+1
+Sedan,Petrol,Toyota,Camry,25000.00,100000001
+1
+10000001,Brake Pads,Bosch,45.99,AutoParts Inc.,10.50,5.00,1.20
+Jane,Smith,987654321
+0
+0
+2
+10002,Secondary Garage,456 Elm St, Othertown
+10001,Main Garage,123 Main St, Anytown
