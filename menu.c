@@ -155,7 +155,7 @@ void displayMenu(StoreManager* storeManager) {
         printf("8. Search Items in System\n");
         printf("9. Add Customer\n");
         printf("10. Purchase Products\n");
-        printf("11. Print All Customers with Purchases\n");
+        printf("11. Print All Customers\n");
         printf("12. Display All Transactions\n");
         printf("13. Increase Car Prices by 15 percent \n");
         printf("14. Manage Garages\n"); // New option for managing garages

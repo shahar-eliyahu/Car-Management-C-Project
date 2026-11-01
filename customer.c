@@ -58,37 +58,52 @@ int addCustomerToList(CustomerList* list, Customer* customer) {
     }
 }
 
+// Frees both purchase lists of a customer, including the purchased cars and parts
+void freeCustomerPurchases(Customer* customer) {
+    if (!customer) return;
+    if (customer->purchased_cars) {
+        LinkedListNode* current = customer->purchased_cars->head;
+        while (current) {
+            LinkedListNode* next = current->next;
+            free(current->data);
+            free(current);
+            current = next;
+        }
+        free(customer->purchased_cars);
+        customer->purchased_cars = NULL;
+    }
+    if (customer->purchased_parts) {
+        LinkedListNode* current = customer->purchased_parts->head;
+        while (current) {
+            LinkedListNode* next = current->next;
+            freePart((Part*)current->data);
+            free(current);
+            current = next;
+        }
+        free(customer->purchased_parts);
+        customer->purchased_parts = NULL;
+    }
+}
+
 int removeCustomerFromList(CustomerList* list, const char* id) {
-    for (size_t i = 0; i < list->count; i++) {
+    for (int i = 0; i < list->count; i++) {
         if (strcmp(list->customers[i]->id, id) == 0) {
-            LinkedListNode* current = list->customers[i]->purchased_cars->head;
-            while (current) {
-                LinkedListNode* next = current->next;
-                free(current->data);
-                free(current);
-                current = next;
-            }
-
-            current = list->customers[i]->purchased_parts->head;
-            while (current) {
-                LinkedListNode* next = current->next;
-                free(current->data);
-                free(current);
-                current = next;
-            }
-
-            free(list->customers[i]->purchased_cars);
-            free(list->customers[i]->purchased_parts);
+            freeCustomerPurchases(list->customers[i]);
             free(list->customers[i]);
 
-            for (size_t j = i; j < list->count - 1; j++) {
+            for (int j = i; j < list->count - 1; j++) {
                 list->customers[j] = list->customers[j + 1];
             }
 
             list->count--;
 
+            if (list->count == 0) {
+                free(list->customers);
+                list->customers = NULL;
+                return 1;
+            }
             Customer** temp = (Customer**)realloc(list->customers, list->count * sizeof(Customer*));
-            if (temp || list->count == 0) {
+            if (temp) {
                 list->customers = temp;
             }
             else {
@@ -165,17 +180,16 @@ int addPartToCustomer(Customer* customer, Part* part) {
         return 0;  // Failure
     }
 
-    Part* partCopy = (Part*)malloc(sizeof(Part));
+    Part* partCopy = copyPart(part);
     if (!partCopy) {
         PRINT_ERROR("Memory allocation failed for part copy.");
         return 0;  // Failure
     }
-    *partCopy = *part;
 
     LinkedListNode* node = (LinkedListNode*)malloc(sizeof(LinkedListNode));
     if (!node) {
         PRINT_ERROR("Memory allocation failed for linked list node.");
-        free(partCopy);
+        freePart(partCopy);
         return 0;  // Failure
     }
 
@@ -195,27 +209,11 @@ int addPartToCustomer(Customer* customer, Part* part) {
 }
 
 void freeCustomerList(CustomerList* list) {
-    for (size_t i = 0; i < list->count; i++) {
-        LinkedListNode* current = list->customers[i]->purchased_cars->head;
-        while (current) {
-            LinkedListNode* next = current->next;
-            free(current->data);
-            free(current);
-            current = next;
-        }
-
-        current = list->customers[i]->purchased_parts->head;
-        while (current) {
-            LinkedListNode* next = current->next;
-            free(current->data);
-            free(current);
-            current = next;
-        }
-
-        free(list->customers[i]->purchased_cars);
-        free(list->customers[i]->purchased_parts);
+    for (int i = 0; i < list->count; i++) {
+        freeCustomerPurchases(list->customers[i]);
         free(list->customers[i]);
     }
     free(list->customers);
+    list->customers = NULL;
     list->count = 0;
 }

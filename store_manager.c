@@ -80,8 +80,10 @@ int purchaseCar(StoreManager* manager, Customer* customer, int serial_number) {
     }
     for (int i = 0; i < manager->carInventory.count; i++) {
         if (manager->carInventory.cars[i]->serial_number == serial_number) {
-            addCarToCustomer(customer, manager->carInventory.cars[i]);
-            removeCarFromInventoryWithoutFree(&manager->carInventory, serial_number);
+            if (!addCarToCustomer(customer, manager->carInventory.cars[i])) {
+                return 0;
+            }
+            removeCarFromInventory(&manager->carInventory, serial_number);
             return 1;
         }
     }
@@ -94,86 +96,43 @@ int purchasePart(StoreManager* manager, Customer* customer, int serial_number) {
     }
     for (int i = 0; i < manager->partInventory.count; i++) {
         if (manager->partInventory.parts[i]->serial_number == serial_number) {
-            addPartToCustomer(customer, manager->partInventory.parts[i]);
-            removePartFromInventoryWithoutFree(&manager->partInventory, serial_number);
+            if (!addPartToCustomer(customer, manager->partInventory.parts[i])) {
+                return 0;
+            }
+            removePartFromInventory(&manager->partInventory, serial_number);
             return 1;
         }
     }
     return 0;
 }
 
-void freeStoreManager(StoreManager* storeManager) {
+// Frees every car, part, customer and garage, leaving an empty store that can be reused
+void clearStore(StoreManager* storeManager) {
     if (!storeManager) return;
 
-    // free car inventory
-    if (storeManager->carInventory.cars) {
-        for (int i = 0; i < storeManager->carInventory.count; i++) {
-            if (storeManager->carInventory.cars[i]) {
-                free(storeManager->carInventory.cars[i]);
-            }
-        }
-        free(storeManager->carInventory.cars);
+    for (int i = 0; i < storeManager->carInventory.count; i++) {
+        free(storeManager->carInventory.cars[i]);
     }
+    free(storeManager->carInventory.cars);
+    storeManager->carInventory.cars = NULL;
+    storeManager->carInventory.count = 0;
 
-    // free part inventory
-    if (storeManager->partInventory.parts) {
-        for (int i = 0; i < storeManager->partInventory.count; i++) {
-            if (storeManager->partInventory.parts[i]) {
-                free(storeManager->partInventory.parts[i]->manufacturer);
-                free(storeManager->partInventory.parts[i]);
-            }
-        }
-        free(storeManager->partInventory.parts);
+    for (int i = 0; i < storeManager->partInventory.count; i++) {
+        freePart(storeManager->partInventory.parts[i]);
     }
+    free(storeManager->partInventory.parts);
+    storeManager->partInventory.parts = NULL;
+    storeManager->partInventory.count = 0;
 
-    // free customer list
-    if (storeManager->customerList.customers) {
-        for (int i = 0; i < storeManager->customerList.count; i++) {
-            Customer* customer = storeManager->customerList.customers[i];
-            if (customer) {
-                // free purchased parts
-                if (customer->purchased_parts) {
-                    LinkedListNode* currentPartNode = customer->purchased_parts->head;
-                    while (currentPartNode) {
-                        LinkedListNode* next = currentPartNode->next;
-                        if (currentPartNode->data) {
-                            free(currentPartNode->data); // free the part
-                        }
-                        free(currentPartNode);       // free the node
-                        currentPartNode = next;
-                    }
-                    free(customer->purchased_parts);
-                }
+    // also frees each customer's purchased cars and parts
+    freeCustomerList(&storeManager->customerList);
 
-                // free purchased cars
-                if (customer->purchased_cars) {
-                    LinkedListNode* currentCarNode = customer->purchased_cars->head;
-                    while (currentCarNode) {
-                        LinkedListNode* next = currentCarNode->next;
-                        free(currentCarNode); // free the node
-                        currentCarNode = next;
-                    }
-                    free(customer->purchased_cars);
-                }
+    clearGarageList(storeManager->garageList);
+}
 
-                // free the customer
-                free(customer);
-            }
-        }
-        free(storeManager->customerList.customers);
-    }
-
-    // free garage list
-    if (storeManager->garageList) {
-        GarageNode* current = storeManager->garageList->head;
-        while (current) {
-            GarageNode* next = current->next;
-            free(current);
-            current = next;
-        }
-        free(storeManager->garageList);
-    }
-
-    // free the store manager
+void freeStoreManager(StoreManager* storeManager) {
+    if (!storeManager) return;
+    clearStore(storeManager);
+    free(storeManager->garageList);
     free(storeManager);
 }

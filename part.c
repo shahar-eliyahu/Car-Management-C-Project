@@ -136,6 +136,7 @@ int comparePartsByBrand(const void* a, const void* b) {
 }
 
 void sortParts(PartInventory* inventory, int (*compare)(const void*, const void*)) {
+    if (inventory->parts == NULL || inventory->count < 2) return;
     qsort(inventory->parts, inventory->count, sizeof(Part*), compare);
 }
 
@@ -185,6 +186,37 @@ int removePartFromInventoryWithoutFree(PartInventory* inventory, int serial_numb
         }
     }
     return 0;
+}
+
+// Portable replacement for strdup/_strdup (the latter only exists on Windows)
+char* duplicateString(const char* source) {
+    if (!source) return NULL;
+    size_t len = strlen(source) + 1;
+    char* copy = (char*)malloc(len);
+    if (copy) {
+        memcpy(copy, source, len);
+    }
+    return copy;
+}
+
+// Deep copy: the copy owns its own manufacturer string
+Part* copyPart(const Part* part) {
+    if (!part) return NULL;
+    Part* copy = (Part*)malloc(sizeof(Part));
+    if (!copy) return NULL;
+    *copy = *part;
+    copy->manufacturer = duplicateString(part->manufacturer);
+    if (part->manufacturer && !copy->manufacturer) {
+        free(copy);
+        return NULL;
+    }
+    return copy;
+}
+
+void freePart(Part* part) {
+    if (!part) return;
+    free(part->manufacturer);
+    free(part);
 }
 
 Part* searchPartByBrand(const PartInventory* inventory, const char* brand) {

@@ -62,6 +62,32 @@ void printGarages(const GarageList* list) {
     }
 }
 
+// Appends at the end so a saved and reloaded list keeps its order
+void appendGarageNode(GarageList* list, GarageNode* node) {
+    if (!list || !node) return;
+    node->next = NULL;
+    if (!list->head) {
+        list->head = node;
+        return;
+    }
+    GarageNode* current = list->head;
+    while (current->next) {
+        current = current->next;
+    }
+    current->next = node;
+}
+
+void clearGarageList(GarageList* list) {
+    if (!list) return;
+    GarageNode* current = list->head;
+    while (current) {
+        GarageNode* next = current->next;
+        free(current);
+        current = next;
+    }
+    list->head = NULL;
+}
+
 int removeGarage(GarageList* list, int id) {
     if (list == NULL || list->head == NULL) {
         PRINT_ERROR("The list is empty or not initialized.");

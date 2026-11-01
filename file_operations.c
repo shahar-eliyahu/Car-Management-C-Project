@@ -70,7 +70,8 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
 
     if (isBinary) {
         // Save car inventory in binary format
-        if (fwrite(&store->carInventory.count, sizeof(size_t), 1, file) != 1) {
+        size_t carInventoryCount = (size_t)store->carInventory.count;
+        if (fwrite(&carInventoryCount, sizeof(size_t), 1, file) != 1) {
             PRINT_ERROR("Error writing car inventory count to file.");
             fclose(file);
             return 0;
@@ -84,7 +85,8 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
         }
 
         // Save part inventory in compressed binary format
-        if (fwrite(&store->partInventory.count, sizeof(size_t), 1, file) != 1) {
+        size_t partInventoryCount = (size_t)store->partInventory.count;
+        if (fwrite(&partInventoryCount, sizeof(size_t), 1, file) != 1) {
             PRINT_ERROR("Error writing part inventory count to file.");
             fclose(file);
             return 0;
@@ -94,7 +96,8 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
         }
 
         // Save customer list in binary format
-        if (fwrite(&store->customerList.count, sizeof(size_t), 1, file) != 1) {
+        size_t customerListCount = (size_t)store->customerList.count;
+        if (fwrite(&customerListCount, sizeof(size_t), 1, file) != 1) {
             PRINT_ERROR("Error writing customer list count to file.");
             fclose(file);
             return 0;
@@ -108,7 +111,7 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
             }
 
             // Save customer's car purchases
-            size_t car_count = customer->purchased_cars->size;
+            size_t car_count = (size_t)customer->purchased_cars->size;
             if (fwrite(&car_count, sizeof(size_t), 1, file) != 1) {
                 PRINT_ERROR("Error writing car purchase count to file.");
                 fclose(file);
@@ -126,7 +129,7 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
             }
 
             // Save customer's part purchases
-            size_t part_count = customer->purchased_parts->size;
+            size_t part_count = (size_t)customer->purchased_parts->size;
             if (fwrite(&part_count, sizeof(size_t), 1, file) != 1) {
                 PRINT_ERROR("Error writing part purchase count to file.");
                 fclose(file);
@@ -170,7 +173,7 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
     }
     else {
         // Save car inventory in text format
-        if (fprintf(file, "%zu\n", store->carInventory.count) < 0) {
+        if (fprintf(file, "%d\n", store->carInventory.count) < 0) {
             PRINT_ERROR("Error writing car inventory count to file.");
             fclose(file);
             return 0;
@@ -186,7 +189,7 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
         }
 
         // Save part inventory in text format
-        if (fprintf(file, "%zu\n", store->partInventory.count) < 0) {
+        if (fprintf(file, "%d\n", store->partInventory.count) < 0) {
             PRINT_ERROR("Error writing part inventory count to file.");
             fclose(file);
             return 0;
@@ -203,7 +206,7 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
         }
 
         // Save customer list in text format
-        if (fprintf(file, "%zu\n", store->customerList.count) < 0) {
+        if (fprintf(file, "%d\n", store->customerList.count) < 0) {
             PRINT_ERROR("Error writing customer list count to file.");
             fclose(file);
             return 0;
@@ -217,7 +220,7 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
             }
 
             // Save customer's car purchases
-            if (fprintf(file, "%zu\n", customer->purchased_cars->size) < 0) {
+            if (fprintf(file, "%d\n", customer->purchased_cars->size) < 0) {
                 PRINT_ERROR("Error writing car purchase count to file.");
                 fclose(file);
                 return 0;
@@ -235,7 +238,7 @@ int saveToFile(const char* filename, const StoreManager* store, int isBinary) {
             }
 
             // Save customer's part purchases
-            if (fprintf(file, "%zu\n", customer->purchased_parts->size) < 0) {
+            if (fprintf(file, "%d\n", customer->purchased_parts->size) < 0) {
                 PRINT_ERROR("Error writing part purchase count to file.");
                 fclose(file);
                 return 0;
@@ -295,13 +298,18 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
         return 0;
     }
 
+    // Loading replaces the current data, so free it first instead of leaking it
+    clearStore(store);
+
     if (isBinary) {
         // Load car inventory in binary format
-        if (fread(&store->carInventory.count, sizeof(size_t), 1, file) != 1) {
+        size_t carInventoryCount = 0;
+        if (fread(&carInventoryCount, sizeof(size_t), 1, file) != 1) {
             PRINT_ERROR("Error reading car inventory count from file.");
             fclose(file);
             return 0;
         }
+        store->carInventory.count = (int)carInventoryCount;
         if (store->carInventory.count > 0) {
             store->carInventory.cars = (Car**)malloc(store->carInventory.count * sizeof(Car*));
             if (!store->carInventory.cars) {
@@ -325,11 +333,13 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
         }
 
         // Load part inventory in compressed binary format
-        if (fread(&store->partInventory.count, sizeof(size_t), 1, file) != 1) {
+        size_t partInventoryCount = 0;
+        if (fread(&partInventoryCount, sizeof(size_t), 1, file) != 1) {
             PRINT_ERROR("Error reading part inventory count from file.");
             fclose(file);
             return 0;
         }
+        store->partInventory.count = (int)partInventoryCount;
         if (store->partInventory.count > 0) {
             store->partInventory.parts = (Part**)malloc(store->partInventory.count * sizeof(Part*));
             if (!store->partInventory.parts) {
@@ -348,11 +358,13 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
         }
 
         // Load customer list in binary format
-        if (fread(&store->customerList.count, sizeof(size_t), 1, file) != 1) {
+        size_t customerListCount = 0;
+        if (fread(&customerListCount, sizeof(size_t), 1, file) != 1) {
             PRINT_ERROR("Error reading customer list count from file.");
             fclose(file);
             return 0;
         }
+        store->customerList.count = (int)customerListCount;
         if (store->customerList.count > 0) {
             store->customerList.customers = (Customer**)malloc(store->customerList.count * sizeof(Customer*));
             if (!store->customerList.customers) {
@@ -477,8 +489,7 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
                 fclose(file);
                 return 0;
             }
-            newNode->next = store->garageList->head;
-            store->garageList->head = newNode;
+            appendGarageNode(store->garageList, newNode);
         }
     }
     else {
@@ -496,7 +507,7 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
                         PRINT_ERROR("Memory allocation failed for car.");
                         continue;
                     }
-                    sscanf(line, "%[^,],%[^,],%[^,],%[^,],%f,%d",
+                    sscanf(line, "%29[^,],%29[^,],%29[^,],%49[^,],%f,%d",
                         car->type, car->engine_type, car->brand, car->model, &car->price, &car->serial_number);
                     store->carInventory.cars[i] = car;
                 }
@@ -515,11 +526,11 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
                         PRINT_ERROR("Memory allocation failed for part.");
                         continue;
                     }
-                    char manufacturer[MAX_NAME_LEN];
-                    sscanf(line, "%d,%[^,],%[^,],%f,%[^,],%f,%f,%f",
+                    char manufacturer[MAX_LINE_LEN];
+                    sscanf(line, "%d,%29[^,],%29[^,],%f,%255[^,],%f,%f,%f",
                         &part->serial_number, part->name, part->brand, &part->price, manufacturer,
                         &part->dimensions.length, &part->dimensions.width, &part->dimensions.height);
-                    part->manufacturer = _strdup(manufacturer);
+                    part->manufacturer = duplicateString(manufacturer);
                     store->partInventory.parts[i] = part;
                 }
             }
@@ -537,7 +548,7 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
                         PRINT_ERROR("Memory allocation failed for customer.");
                         continue;
                     }
-                    sscanf(line, "%[^,],%[^,],%s", customer->first_name, customer->last_name, customer->id);
+                    sscanf(line, "%29[^,],%29[^,],%9s", customer->first_name, customer->last_name, customer->id);
                     customer->purchased_cars = (LinkedList*)malloc(sizeof(LinkedList));
                     customer->purchased_parts = (LinkedList*)malloc(sizeof(LinkedList));
                     customer->purchased_cars->head = customer->purchased_cars->tail = NULL;
@@ -556,7 +567,7 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
                                     PRINT_ERROR("Memory allocation failed for purchased car.");
                                     continue;
                                 }
-                                sscanf(line, "%[^,],%[^,],%[^,],%[^,],%f,%d",
+                                sscanf(line, "%29[^,],%29[^,],%29[^,],%49[^,],%f,%d",
                                     car->type, car->engine_type, car->brand, car->model, &car->price, &car->serial_number);
                                 LinkedListNode* node = (LinkedListNode*)malloc(sizeof(LinkedListNode));
                                 if (!node) {
@@ -590,11 +601,11 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
                                     PRINT_ERROR("Memory allocation failed for purchased part.");
                                     continue;
                                 }
-                                char manufacturer[MAX_NAME_LEN];
-                                sscanf(line, "%d,%[^,],%[^,],%f,%[^,],%f,%f,%f",
+                                char manufacturer[MAX_LINE_LEN];
+                                sscanf(line, "%d,%29[^,],%29[^,],%f,%255[^,],%f,%f,%f",
                                     &part->serial_number, part->name, part->brand, &part->price, manufacturer,
                                     &part->dimensions.length, &part->dimensions.width, &part->dimensions.height);
-                                part->manufacturer = _strdup(manufacturer);
+                                part->manufacturer = duplicateString(manufacturer);
                                 LinkedListNode* node = (LinkedListNode*)malloc(sizeof(LinkedListNode));
                                 if (!node) {
                                     PRINT_ERROR("Memory allocation failed for linked list node.");
@@ -629,9 +640,8 @@ int loadFromFile(const char* filename, StoreManager* store, int isBinary) {
                         PRINT_ERROR("Memory allocation failed for garage node.");
                         continue;
                     }
-                    sscanf(line, "%d,%[^,],%[^\n]", &newNode->garage.id, newNode->garage.name, newNode->garage.address);
-                    newNode->next = store->garageList->head;
-                    store->garageList->head = newNode;
+                    sscanf(line, "%d,%49[^,],%99[^\r\n]", &newNode->garage.id, newNode->garage.name, newNode->garage.address);
+                    appendGarageNode(store->garageList, newNode);
                 }
             }
         }

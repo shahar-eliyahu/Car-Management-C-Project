@@ -141,10 +141,12 @@ int compareByBrand(const void* a, const void* b) {
 }
 
 void sortCars(CarInventory* inventory, int (*compare)(const void*, const void*)) {
+    if (inventory->cars == NULL || inventory->count < 2) return;
     qsort(inventory->cars, inventory->count, sizeof(Car*), compare);
 }
 
 Car* findCar(CarInventory* inventory, const void* key, int (*compare)(const void*, const void*)) {
+    if (inventory->cars == NULL || inventory->count == 0) return NULL;
     Car** result = (Car**)bsearch(key, inventory->cars, inventory->count, sizeof(Car*), compare);
     if (result != NULL) {
         return *result;

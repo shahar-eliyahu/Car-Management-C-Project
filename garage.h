@@ -29,5 +29,7 @@ GarageList* createGarageList();
 int addGarage(GarageList* list, Garage garage);
 void printGarages(const GarageList* list);
 int removeGarage(GarageList* list, int id);
+void appendGarageNode(GarageList* list, GarageNode* node);
+void clearGarageList(GarageList* list);
 
 #endif // GARAGE_H

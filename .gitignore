@@ -53,3 +53,17 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Project build output and runtime files
+car_management
+system_data.bin
+
+# IDE / OS files
+.vs/
+.vscode/
+Debug/
+Release/
+x64/
+*.user
+Thumbs.db
+.DS_Store

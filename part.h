@@ -37,5 +37,8 @@ Part* searchPartByBrand(const PartInventory* inventory, const char* brand);
 int removePartFromInventoryWithoutFree(PartInventory* inventory, int serial_number);
 
 void freePartInventory(PartInventory* inventory);
+char* duplicateString(const char* source);
+Part* copyPart(const Part* part);
+void freePart(Part* part);
 
 #endif// PART_H

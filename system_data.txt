@@ -1,20 +1,38 @@
-3
-Sedan,Petrol,Toyota,Camry,25000.00,100000001
-SUV,Diesel,Ford,Explorer,32000.00,100000002
-aaa,bbb,bmw,M6,6000000.00,100000000
-3
-10000001,Brake Pads,Bosch,45.99,AutoParts Inc.,10.50,5.00,1.20
-10000002,Oil Filter,Mobil,15.50,Filters Ltd.,4.00,4.00,5.00
-100000000,bab,bab,19753.00,aba,5.00,5.00,5.00
+8
+Sedan,Petrol,Toyota,Camry,27500.00,100000001
+SUV,Diesel,Ford,Explorer,38900.00,100000002
+Hatchback,Petrol,Mazda,Mazda3,23400.00,100000003
+SUV,Hybrid,Toyota,RAV4 Hybrid,34200.00,100000004
+Sedan,Electric,Tesla,Model 3,41990.00,100000005
+Coupe,Petrol,BMW,M4,74700.00,100000006
+SUV,Electric,Hyundai,Ioniq 5,44500.00,100000007
+Pickup,Diesel,Ford,Ranger,36800.00,100000008
+6
+100000001,Brake Pads,Bosch,45.99,Robert Bosch GmbH,10.50,5.00,1.20
+100000002,Oil Filter,Mobil,15.50,ExxonMobil,4.00,4.00,5.00
+100000003,Spark Plug Set,NGK,32.00,NGK Spark Plug Co,2.50,2.50,8.00
+100000004,Car Battery,Varta,149.90,Clarios,27.80,17.50,19.00
+100000005,Wiper Blades,Bosch,24.90,Robert Bosch GmbH,60.00,3.00,2.00
+100000006,Air Filter,Mann,19.80,Mann+Hummel,25.00,20.00,5.00
+4
+Daniel,Levi,204587316
+1
+Sedan,Petrol,Hyundai,Elantra,24600.00,100000010
+1
+100000011,Floor Mats,WeatherTech,89.00,MacNeil Automotive,70.00,50.00,1.00
+Noa,Cohen,315948207
+1
+SUV,Hybrid,Kia,Sportage Hybrid,33900.00,100000011
+0
+Yossi,Mizrahi,128473960
+0
 2
-John,Doe,123456789
-1
-Sedan,Petrol,Toyota,Camry,25000.00,100000001
-1
-10000001,Brake Pads,Bosch,45.99,AutoParts Inc.,10.50,5.00,1.20
-Jane,Smith,987654321
+100000012,Engine Oil 5W-30,Castrol,42.50,BP,20.00,10.00,30.00
+100000013,Cabin Filter,Mann,17.90,Mann+Hummel,22.00,20.00,3.00
+Maya,Friedman,402761538
 0
 0
-2
-10002,Secondary Garage,456 Elm St, Othertown
-10001,Main Garage,123 Main St, Anytown
+3
+10001,Main Garage,12 HaMasger St, Tel Aviv
+10002,North Service Center,5 Ha'Atzmaut Rd, Haifa
+10003,South Auto Care,44 Rager Blvd, Beer Sheva

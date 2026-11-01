@@ -23,6 +23,7 @@ int removePart(StoreManager* manager, int serial_number);
 int removeCustomer(StoreManager* manager, const char* id);
 int purchaseCar(StoreManager* manager, Customer* customer, int serial_number);
 int purchasePart(StoreManager* manager, Customer* customer, int serial_number);
+void clearStore(StoreManager* manager);
 void freeStoreManager(StoreManager* manager);
 
 #endif // STORE_MANAGER_H
